@@ -1,6 +1,8 @@
 services:
   cache:
     image: redis:latest
+    networks:
+      - blog
     container_name: blog_rating_cache
     restart: on-failure
     ports:
@@ -9,6 +11,8 @@ services:
   celery:
     build: .
     command: celery -A blog_project worker -l info
+    networks:
+      - blog
     volumes:
       - .:/app
     env_file:
@@ -35,12 +39,16 @@ services:
     container_name: blog_project
     command: sh -c "python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
     restart: always
+    networks:
+      - blog
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      STATIC_ROOT: ./
     depends_on:
       - postgres
       - cache
@@ -48,11 +56,19 @@ services:
   postgres:
     container_name: blog_rating_db
     image: postgres
+    networks:
+      - blog
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hosein}
-    volumes:
-      - ./postgres:/data/postgres
+      POSTGRES_DB: blog_db
+#    volumes:
+#      - ./docker-conf/db.sql:/docker-entrypoint-initdb.d/db.sql
+#      - ./postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
+
+networks:
+  blog:
+    name: blog

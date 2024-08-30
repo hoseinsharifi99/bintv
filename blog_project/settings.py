@@ -37,13 +37,13 @@ celery_app.config_from_object('django.conf:settings', namespace='CELERY')
 celery_app.autodiscover_tasks()
 
 # Broker settings
-CELERY_BROKER_URL = 'redis://localhost:6380/1'
-CELERY_RESULT_BACKEND = 'redis://localhost:6380/1'
+CELERY_BROKER_URL = os.getenv("REDIS")
+CELERY_RESULT_BACKEND = os.getenv("REDIS")
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6380/1",
+        "LOCATION": os.getenv("REDIS"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -103,7 +103,7 @@ DATABASES = {
         'NAME': 'blog_db',
         'USER': 'postgres',
         'PASSWORD': 'hosein',
-        'HOST': 'localhost',
+        'HOST': os.getenv("POSTGRES"),
         'PORT': '5432',
     }
 }
@@ -144,6 +144,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = "."
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -1,0 +1,1 @@
+CREATE database blog_db;

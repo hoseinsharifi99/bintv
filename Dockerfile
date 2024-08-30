@@ -1,16 +1,16 @@
 # Use an official Python runtime as a parent image
-FROM python:3.8
+FROM python:3.10.12
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /blog_project
 
 # Install dependencies
-COPY requirements.txt /app/
+COPY requirements.txt /blog_project/
 RUN pip install -r requirements.txt
 
 # Copy the project code into the container
-COPY . /app/
+COPY . /blog_project/
