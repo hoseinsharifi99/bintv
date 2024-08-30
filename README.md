@@ -17,9 +17,14 @@ This is a Django-based web application that allows users to create blog posts an
 
 ## Setup Instructions
 
-### 1. Clone the Repository
+---
+
+## Install
+
+To setup the project, it's only needed to run command below:
 
 ```bash
-git clone https://github.com/your-username/your-django-blog.git
-cd your-django-blog
+make up
 ```
+
+---
