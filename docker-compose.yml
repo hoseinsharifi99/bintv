@@ -1,0 +1,58 @@
+services:
+  cache:
+    image: redis:latest
+    container_name: blog_rating_cache
+    restart: on-failure
+    ports:
+      - 6380:6379
+
+  celery:
+    build: .
+    command: celery -A blog_project worker -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - cache
+
+#    celery-beat:
+#      build: .
+#      command: celery -A blog_project beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+#      volumes:
+#        - .:/app
+#      env_file:
+#        - .env
+#      depends_on:
+#        - postgres
+#        - cache
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blog_project
+    command: sh -c "python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
+    restart: always
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - cache
+
+  postgres:
+    container_name: blog_rating_db
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hosein}
+    volumes:
+      - ./postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
